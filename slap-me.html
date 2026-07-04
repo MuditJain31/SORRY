@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Slap Your Idiot Boyfriend</title>
+<style>
+  html, body {
+    touch-action: pan-y;
+  }
+
+  :root {
+    --cloud: #fff8f5;
+    --marshmallow-pink: #ffd4e5;
+    --marshmallow-pink-deep: #ff8fb8;
+    --toast: #e8934a;
+    --toast-dark: #c96f2e;
+    --cheek: #ff6b9d;
+    --ink: #4a3b3b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #fff8f5 0%, #ffe8f0 60%, #ffd4e5 100%);
+    font-family: 'Baloo 2', 'Comic Sans MS', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    padding: 24px;
+    text-align: center;
+  }
+
+  @font-face {
+    font-family: 'Baloo 2';
+    src: local('Baloo 2');
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    color: var(--ink);
+    margin: 0 0 4px 0;
+    font-weight: 800;
+  }
+
+  h1 span {
+    color: var(--cheek);
+  }
+
+  .subtitle {
+    color: #8a6f6f;
+    font-size: clamp(14px, 3vw, 18px);
+    margin: 0 0 32px 0;
+    max-width: 420px;
+  }
+
+  .stage {
+    position: relative;
+    width: min(320px, 70vw);
+    height: min(320px, 70vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #marshmallow {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: transform 0.06s ease-out;
+    filter: drop-shadow(0 12px 20px rgba(255, 140, 180, 0.35));
+  }
+
+  #marshmallow:active,
+  .hit {
+    transform: scale(0.88) rotate(var(--tilt, -6deg));
+  }
+
+  #slap-hand {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg) scale(0.6);
+  }
+
+  #slap-hand.swing {
+    animation: slapSwing 0.35s ease-out forwards;
+  }
+
+  @keyframes slapSwing {
+    0% {
+      opacity: 0;
+      transform: translate(-120%, -140%) rotate(-60deg) scale(0.5);
+    }
+    55% {
+      opacity: 1;
+      transform: translate(-50%, -50%) rotate(10deg) scale(1.1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(20%, 20%) rotate(30deg) scale(0.9);
+    }
+  }
+
+  .counter-wrap {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .counter-label {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b98a8a;
+    font-weight: 700;
+  }
+
+  .counter {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 800;
+    color: var(--toast-dark);
+    line-height: 1;
+  }
+
+  .message {
+    margin-top: 18px;
+    min-height: 28px;
+    font-size: clamp(14px, 3.2vw, 18px);
+    font-weight: 700;
+    color: var(--ink);
+    max-width: 340px;
+    width: 90vw;
+    line-height: 1.4;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: visible;
+    padding: 0 8px;
+  }
+
+  .floating-text {
+    position: absolute;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--cheek);
+    pointer-events: none;
+    animation: floatUp 0.9s ease-out forwards;
+    white-space: nowrap;
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0) scale(0.7); }
+    30% { transform: translate(-50%, -20px) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -70px) scale(1); }
+  }
+
+  .particle {
+    position: absolute;
+    font-size: 20px;
+    pointer-events: none;
+    animation: particleFly 0.7s ease-out forwards;
+  }
+
+  @keyframes particleFly {
+    0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.5);
+    }
+  }
+
+  .footer-note {
+    margin-top: 36px;
+    font-size: 12px;
+    color: #c9a3a3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hit, #marshmallow:active { transition: none; }
+    .floating-text, .particle { animation: none; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <h1>Slap Marshmallow's <span>Idiot Boyfriend</span> 🖐️</h1>
+  <p class="subtitle">I was silly, and I'm sorry. Slap away — I love you no matter how many.</p>
+
+  <div class="stage" id="stage">
+    <div id="marshmallow" style="
+        width: 100%; height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        transition: transform 0.06s ease-out;
+        filter: drop-shadow(0 12px 20px rgba(255, 140, 180, 0.35));
+        border: 6px solid #fff;
+        background: #ffe3ee;
+        position: relative;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+      ">
+      <!--
+        PHOTO GOES HERE.
+        Replace the src below with either:
+          1) A file path/URL, e.g. src="me.jpg"
+          2) A base64 string, e.g. src="data:image/jpeg;base64,/9j/4AAQSk..."
+        The image will auto-crop to a circle at whatever size the container is.
+      -->
+      <img
+        id="target-photo"
+        src="img.jpeg"
+        alt="target"
+        style="width:100%; height:100%; object-fit: cover; display:block;"
+      />
+      <div class="cheek-l" style="position:absolute; left:14%; top:52%; width:22%; height:16%; border-radius:50%; background:#ff6b9d; opacity:0; pointer-events:none;"></div>
+      <div class="cheek-r" style="position:absolute; right:14%; top:52%; width:22%; height:16%; border-radius:50%; background:#ff6b9d; opacity:0; pointer-events:none;"></div>
+    </div>
+
+    <svg id="slap-hand" viewBox="0 0 100 100" style="position:absolute; width:110px; height:110px; opacity:0; pointer-events:none; z-index:5;">
+      <text x="50" y="70" font-size="70" text-anchor="middle">🖐️</text>
+    </svg>
+  </div>
+
+  <div class="counter-wrap">
+    <div class="counter-label">Slaps delivered</div>
+    <div class="counter" id="counter">0</div>
+  </div>
+
+  <div class="message" id="message">Go on. I deserve it.</div>
+
+  <div class="footer-note">made with love (and a guilty conscience) 💌</div>
+
+<script>
+  const marshmallow = document.getElementById('marshmallow');
+  const stage = document.getElementById('stage');
+  const counterEl = document.getElementById('counter');
+  const messageEl = document.getElementById('message');
+  const cheekL = marshmallow.querySelector('.cheek-l');
+  const cheekR = marshmallow.querySelector('.cheek-r');
+  const slapHand = document.getElementById('slap-hand');
+
+  let count = 0;
+
+  const slapWords = ['SPLAT!', 'BONK!', 'POW!', 'WHACK!', 'THWAP!', 'BOP!', 'SMACK!', 'ZOOM!'];
+  const emojis = ['💥', '⭐', '✨', '💫', '🌟'];
+
+  const milestoneMessages = {
+    1: "Ow. Worth it though, I love you.",
+    5: "I really am sorry, you know. Head over heels for you.",
+    10: "Still the best thing that's ever happened to me.",
+    20: "You could slap me forever and I'd still choose you.",
+    30: "I'm sorry. And I'm so lucky to have you.",
+    50: "50 slaps in and I still think you're my favorite person alive.",
+    75: "You're allowed to be mad. I'm just glad you're still here.",
+    100: "100 slaps and I love you 100 times more than that.",
+    150: "I'd take a thousand of these over one day without you.",
+    200: "Okay my love, I think I've learned my lesson. I love you so much.",
+  };
+
+  const fallbackMessages = [
+    "I'm sorry, my love.",
+    "Okay that one hurt, but fair.",
+    "I love you more than you know.",
+    "Still yours, always.",
+    "Slap away, I'm not going anywhere.",
+    "You mean everything to me.",
+    "I'm sorry, and I'm so grateful for you.",
+  ];
+
+  function randomTilt() {
+    return (Math.random() * 24 - 12).toFixed(1) + 'deg';
+  }
+
+  function spawnFloatingText(x, y) {
+    const el = document.createElement('div');
+    el.className = 'floating-text';
+    el.textContent = slapWords[Math.floor(Math.random() * slapWords.length)];
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.color = ['#ff6b9d', '#ff8fb8', '#e8934a', '#ff5b8f'][Math.floor(Math.random() * 4)];
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+
+  function spawnParticles(x, y) {
+    for (let i = 0; i < 6; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 40 + Math.random() * 60;
+      p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 700);
+    }
+  }
+
+  function updateFace() {
+    // progressively more dazed shake at high counts
+    if (count > 150) {
+      marshmallow.style.filter = 'drop-shadow(0 12px 20px rgba(255, 140, 180, 0.35)) saturate(0.85)';
+    }
+  }
+
+  function triggerSlap(e) {
+    count++;
+    counterEl.textContent = count;
+
+    const rect = marshmallow.getBoundingClientRect();
+    let x, y;
+    if (e.touches && e.touches[0]) {
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+    } else {
+      x = e.clientX || (rect.left + rect.width / 2);
+      y = e.clientY || (rect.top + rect.height / 2);
+    }
+
+    spawnFloatingText(x, y - 10);
+    spawnParticles(x, y);
+
+    marshmallow.style.setProperty('--tilt', randomTilt());
+    marshmallow.classList.remove('hit');
+    void marshmallow.offsetWidth;
+    marshmallow.classList.add('hit');
+    setTimeout(() => marshmallow.classList.remove('hit'), 120);
+
+    slapHand.classList.remove('swing');
+    void slapHand.offsetWidth;
+    slapHand.classList.add('swing');
+
+    cheekL.style.opacity = '0.6';
+    cheekR.style.opacity = '0.6';
+    setTimeout(() => {
+      cheekL.style.opacity = '0';
+      cheekR.style.opacity = '0';
+    }, 400);
+
+    if (milestoneMessages[count]) {
+      messageEl.textContent = milestoneMessages[count];
+    } else {
+      messageEl.textContent = fallbackMessages[Math.floor(Math.random() * fallbackMessages.length)];
+    }
+
+    updateFace();
+
+    // little screen shake on big milestones
+    if (count % 25 === 0) {
+      document.body.style.transform = 'translateX(-4px)';
+      setTimeout(() => { document.body.style.transform = 'translateX(4px)'; }, 60);
+      setTimeout(() => { document.body.style.transform = 'translateX(0)'; }, 120);
+    }
+  }
+
+  marshmallow.addEventListener('click', triggerSlap);
+  marshmallow.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    triggerSlap(e);
+  }, { passive: false });
+</script>
+
+</body>
+</html>
